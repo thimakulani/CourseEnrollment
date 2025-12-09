@@ -64,16 +64,16 @@
         catch (Exception ex)
         {
             snackbar.Add(ex.Message, Severity.Error);
-            if (AuthStateProvider is CustomAuthStateProvider customProvider)
-            {
-                StudentDTO studentDTO = new StudentDTO()
-                {
-                    Email = "thima@gmail.com",
-                    Name = "thima",
-                    Surname = "Sigauque"
-                };
-                customProvider.MarkUserAsAuthenticated(studentDTO);
-            }
+            // if (AuthStateProvider is CustomAuthStateProvider customProvider)
+            // {
+            //     StudentDTO studentDTO = new StudentDTO()
+            //     {
+            //         Email = "thima@gmail.com",
+            //         Name = "thima",
+            //         Surname = "Sigauque"
+            //     };
+            //     customProvider.MarkUserAsAuthenticated(studentDTO);
+            // }
         }
         finally
         {
