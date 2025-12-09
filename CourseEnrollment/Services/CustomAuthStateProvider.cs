@@ -1,4 +1,5 @@
 ﻿using CourseEnrollment.Models;
+using CourseEnrollment.ViewModels;
 using Microsoft.AspNetCore.Components.Authorization;
 using System;
 using System.Collections.Generic;
@@ -16,18 +17,18 @@ namespace CourseEnrollment.Services
             return Task.FromResult(new AuthenticationState(_currentUser));
         }
 
-        public void MarkUserAsAuthenticated(ApplicationUser user)
+        public void MarkUserAsAuthenticated(StudentDTO user)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            /* var claims = new List<Claim>
+             var claims = new List<Claim>
              {
                  new(ClaimTypes.Name, user.Name ?? string.Empty),
                  new(ClaimTypes.Surname, user.Surname ?? string.Empty),
                  new(ClaimTypes.Email, user.Email ?? string.Empty),
-                 new(ClaimTypes.NameIdentifier, user.Id ?? string.Empty)
-             };*/
+                 new(ClaimTypes.NameIdentifier, user.Id.ToString() ?? string.Empty)
+             };
 
             /* // ✅ Add multiple roles
              if (user.UserRoles != null)
@@ -39,10 +40,10 @@ namespace CourseEnrollment.Services
                  }
              }*/
 
-            /* var identity = new ClaimsIdentity(claims, "CustomAuth");
-             _currentUser = new ClaimsPrincipal(identity);
+            var identity = new ClaimsIdentity(claims, "CustomAuth");
+            _currentUser = new ClaimsPrincipal(identity);
 
-             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));*/
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
         }
 
         public void MarkUserAsLoggedOut()

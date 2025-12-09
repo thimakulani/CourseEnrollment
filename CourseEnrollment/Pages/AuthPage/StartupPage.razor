@@ -1,0 +1,67 @@
+﻿@page "/start_up"
+@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
+@using MudBlazor
+@inject IDialogService DialogService
+<div class="page">
+
+    <div class="welcome-container">
+        <div class="welcome-box">
+            <h1>Welcome to Course Enrollment System</h1>
+            <p>Please login or register to continue.</p>
+
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OpenLoginDialog">
+                Login
+            </MudButton>
+
+            <MudButton Color="Color.Secondary" Variant="Variant.Outlined" Class="ml-2" OnClick="OpenRegisterDialog">
+                Register
+            </MudButton>
+        </div>
+    </div>
+
+</div>
+
+@code {
+    private async Task OpenLoginDialog()
+    {
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+
+        await DialogService.ShowAsync<Login>("Login", options);
+    }
+
+    private async Task OpenRegisterDialog()
+    {
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+
+        await DialogService.ShowAsync<Register>("Register", options);
+    }
+}
+
+<style>
+    .welcome-container {
+        display: flex;
+        height: 100vh;
+        justify-content: center;
+        align-items: center;
+        background-color: #f4f6f9;
+    }
+
+    .welcome-box {
+        text-align: center;
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+</style>

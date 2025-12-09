@@ -1,0 +1,25 @@
+﻿@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+    [Parameter] public Course Course { get; set; }
+    @inject IHttpClientService http;
+    private void ConfirmEnroll()
+    {
+        var result = http.PostAsync<StudentCourse>("api/enrollments/enroll", Course.Id);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6" Class="mb-3">Confirm Enrollment</MudText>
+        <MudText>Are you sure you want to enroll in <b>@Course.Title</b>?</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="ConfirmEnroll">
+            Yes, Enroll
+        </MudButton>
+        <MudButton Variant="Variant.Text" OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>

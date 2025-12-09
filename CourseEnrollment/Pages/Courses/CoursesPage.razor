@@ -1,0 +1,102 @@
+﻿@page "/courses"
+@using MudBlazor
+@using System.Threading.Tasks
+@inject IDialogService DialogService
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4">Available Courses</MudText>
+
+    @if (_isLoading)
+    {
+        <div class="text-center">
+            <MudProgressCircular Size="Size.Large" />
+        </div>
+    }
+    else
+    {
+        <MudGrid Spacing="3">
+            @foreach (var course in CourseList)
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3">
+                    <MudCard Class="course-card">
+
+                        <MudCardHeader>
+                            <MudText Typo="Typo.h6">@course.Title</MudText>
+                        </MudCardHeader>
+
+                        <MudCardContent>
+                            <MudText Class="mb-2">@course.Description</MudText>
+                            <MudChip T="string" Color="Color.Primary" Variant="Variant.Outlined">
+                                @course.Duration
+                            </MudChip>
+                        </MudCardContent>
+
+                        <MudCardActions>
+                            <MudButton Size="Size.Small" Color="Color.Primary" Variant="Variant.Filled" FullWidth="true"
+                                       OnClick="@(() => ViewDetails(course.Id))">
+                                View Details
+                            </MudButton>
+                            <MudButton Size="Size.Small" Color="Color.Success" Variant="Variant.Outlined" FullWidth="true"
+                                       OnClick="@(() => EnrollCourse(course))">
+                                Enroll
+                            </MudButton>
+                        </MudCardActions>
+
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+</MudContainer>
+
+    @code {
+    private bool _isLoading = true;
+    private List<Course> CourseList = new();
+    private ISnackbar snackbar;
+    @inject IHttpClientService httpClientService;
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCoursesAsync();
+        // await Task.Delay(1000); 
+
+        // CourseList = new List<Course>
+        // {
+        //     new() { Id = Guid.NewGuid(), Title = "C# Fundamentals", Description = "Learn the basics of C#", Duration = 5 },
+        //     new() { Id = Guid.NewGuid(), Title = "ASP.NET Core", Description = "Build APIs with ASP.NET", Duration = 10},
+        //     new() { Id = Guid.NewGuid(), Title = "Blazor WebAssembly", Description = "Build modern UI with Blazor", Duration = 99 },
+        //     new() { Id = Guid.NewGuid(), Title = "Entity Framework Core", Description = "Work with databases in .NET", Duration = 22 }
+        // };
+
+        // _isLoading = false;
+    }
+    private async Task LoadCoursesAsync()
+    {
+        try
+        {
+            _isLoading = true;
+            CourseList = await httpClientService.GetAsync<List<Course>>("api/courses");
+        }
+        catch (Exception ex)
+        {
+            snackbar.Add(ex.Message, Severity.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+    private void ViewDetails(Guid id)
+    {
+        
+    }
+
+    private async Task EnrollCourse(Course course)
+    {
+        var parameters = new DialogParameters { ["Course"] = course };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var result = await DialogService.ShowAsync<EnrollDialog>($"Enroll in {course.Title}", parameters, options);
+        
+    }
+
+}

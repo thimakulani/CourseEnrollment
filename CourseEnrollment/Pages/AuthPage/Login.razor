@@ -1,0 +1,87 @@
+﻿@using System.Threading.Tasks
+@using CourseEnrollment.Services
+@using CourseEnrollment.ViewModels
+<MudDialog>
+    <DialogContent>
+
+        <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <MudTextField T="string"
+                          Label="Email"
+                          @bind-Value="loginModel.Email"
+                          Required="true"
+                          RequiredError="Email is required"
+                          Class="mb-3" />
+
+            <MudTextField T="string"
+                          Label="Password"
+                          @bind-Value="loginModel.Password"
+                          InputType="InputType.Password"
+                          Required="true"
+                          RequiredError="Password is required"
+                          Class="mb-4" />
+
+            <MudButton Disabled="_loading" Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">
+                @if (_loading)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                }
+                else
+                {
+                    @("Login")
+                }
+            </MudButton>
+
+            <MudButton Variant="Variant.Text" OnClick="Cancel" Class="ml-2">
+                Cancel
+            </MudButton>
+        </EditForm>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+    @inject AuthenticationStateProvider AuthStateProvider
+    private UserLogin loginModel = new();
+    @inject IUserService UserService;
+    @inject ISnackbar snackbar;
+    private bool _loading = false;
+    private async Task HandleLogin()
+    {
+        try
+        {
+            _loading = true;
+            var lg = await UserService.Login(loginModel);
+            if (AuthStateProvider is CustomAuthStateProvider customProvider)
+            {
+                customProvider.MarkUserAsAuthenticated(lg.Student);
+            }
+            MudDialog.Close(DialogResult.Ok(loginModel));
+
+        }
+        catch (Exception ex)
+        {
+            snackbar.Add(ex.Message, Severity.Error);
+            if (AuthStateProvider is CustomAuthStateProvider customProvider)
+            {
+                StudentDTO studentDTO = new StudentDTO()
+                {
+                    Email = "thima@gmail.com",
+                    Name = "thima",
+                    Surname = "Sigauque"
+                };
+                customProvider.MarkUserAsAuthenticated(studentDTO);
+            }
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+
+}

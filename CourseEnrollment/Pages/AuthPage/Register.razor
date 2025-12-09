@@ -1,0 +1,85 @@
+﻿
+<MudDialog>
+    <DialogContent>
+
+        <EditForm Model="@registerModel" OnValidSubmit="HandleRegister">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <MudTextField T="string"
+                          Label="Full Name"
+                          @bind-Value="registerModel.FullName"
+                          Required="true"
+                          RequiredError="Full name is required"
+                          Class="mb-3" />
+
+            <MudTextField T="string"
+                          Label="Email"
+                          @bind-Value="registerModel.Email"
+                          Required="true"
+                          RequiredError="Email is required"
+                          Class="mb-3" />
+
+            <MudTextField T="string"
+                          Label="Password"
+                          @bind-Value="registerModel.Password"
+                          InputType="InputType.Password"
+                          Required="true"
+                          RequiredError="Password is required"
+                          Class="mb-3" />
+
+            <MudTextField T="string"
+                          Label="Confirm Password"
+                          @bind-Value="registerModel.ConfirmPassword"
+                          InputType="InputType.Password"
+                          Required="true"
+                          RequiredError="Confirm password is required"
+                          Class="mb-4" />
+
+            <MudButton Disabled="_loading" Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">
+                
+                @if (_loading)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                }
+                else
+                {
+                    @("Register")
+                }
+            </MudButton>
+
+            <MudButton Variant="Variant.Text" OnClick="Cancel" Class="ml-2">
+                Cancel
+            </MudButton>
+        </EditForm>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+
+    private RegisterModel registerModel = new();
+    private bool _loading = false;
+    private void HandleRegister()
+    {
+        // Add your API call here
+        MudDialog.Close(DialogResult.Ok(registerModel));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    public class RegisterModel
+    {
+        [Required]
+        public string FullName { get; set; }
+
+        [Required, EmailAddress]
+        public string Email { get; set; }
+
+        [Required, MinLength(6)]
+        public string Password { get; set; }
+
+        [Required, Compare(nameof(Password), ErrorMessage = "Passwords do not match")]
+        public string ConfirmPassword { get; set; }
+    }
+}

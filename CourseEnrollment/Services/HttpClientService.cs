@@ -60,7 +60,7 @@ namespace CourseEnrollment.Services
 
                 var payload = new { RefreshToken = _refreshToken };
                 var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync("/api/auth/refresh", content);
+                var response = await _httpClient.PostAsync("api/account/refresh", content);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -105,7 +105,7 @@ namespace CourseEnrollment.Services
         {
             var json = JsonConvert.SerializeObject(payload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("/api/auth/login", content);
+            var response = await _httpClient.PostAsync("api/account/login", content);
 
             if (response.IsSuccessStatusCode)
             {
@@ -181,11 +181,6 @@ namespace CourseEnrollment.Services
             return await SendRequestWithRetry<T>(() => _httpClient.PutAsync(endpoint, content));
         }
     }
-
-
-
-
-
     public class Token
     {
         public string AccessToken { get; set; }
